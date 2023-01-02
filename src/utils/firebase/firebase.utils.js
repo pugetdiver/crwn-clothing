@@ -15,7 +15,11 @@ import {
     getFirestore,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    collection,
+    writeBatch,
+    query,
+    getDocs
 } from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -45,6 +49,35 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
 
 export const db = getFirestore();
+
+export const addCollectionAndDocuments = async (collectionKey, objects) => {
+    const collectionRef = collection(db, collectionKey);
+    const batch = writeBatch(db);
+
+    objects.forEach(o => {
+        const docRef = doc(collectionRef, o.title.toLowerCase());
+        batch.set(docRef, o);
+    });
+
+    await batch.commit();
+    console.log("finished")
+
+}
+
+export const getCollectionAndDocuments = async () => {
+    const collectionRef = collection(db, 'categories');
+    const q = query(collectionRef);
+  
+    const querySnapshot = await getDocs(q);
+    const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+      const { title, items } = docSnapshot.data();
+      acc[title.toLowerCase()] = items;
+      return acc;
+    }, {});
+  
+    return categoryMap;
+}
+
 
 export const createUserDocumentFromAuth = async (userAuth, additionalInformation) => {
 
@@ -85,7 +118,7 @@ export const createAuthUserWithEmailAndPassword = async (email, password) => {
     return await createUserWithEmailAndPassword(auth, email, password);
 }
 
-export const signInAuthWithEmailAndPassword = async (email, password) =>{
+export const signInAuthWithEmailAndPassword = async (email, password) => {
 
     if (!email || !password) {
         return;
@@ -94,6 +127,6 @@ export const signInAuthWithEmailAndPassword = async (email, password) =>{
     return await signInWithEmailAndPassword(auth, email, password);
 }
 
-export const signOutUser = async() => await signOut(auth);
+export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth, callback);
