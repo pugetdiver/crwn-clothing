@@ -1,43 +1,44 @@
 
 import { useContext } from 'react';
 import { CartContext } from '../../context/cart.context';
-import './checkout-item.styles.scss'
+import './checkout-item.styles.jsx'
+import { CheckoutItemContainer, ImageContainer, BaseSpan, Quantity, Arrow, Value, RemoveButton } from './checkout-item.styles.jsx';
 
 const CheckoutItem = ({ cartItem }) => {
 
     const { name, imageUrl, quantity, price } = cartItem;
 
-    const {addItemToCart, removeItemFromCart, deleteItemFromCart} = useContext(CartContext);
+    const { addItemToCart, removeItemFromCart, deleteItemFromCart } = useContext(CartContext);
 
-    const AddProductToCart = () =>{
+    const AddProductToCart = () => {
         addItemToCart(cartItem);
     }
 
-    const RemoveProductFromCart = () =>{
+    const RemoveProductFromCart = () => {
         removeItemFromCart(cartItem);
     }
 
-    const DeleteProductFromCart = () =>{
+    const DeleteProductFromCart = () => {
         deleteItemFromCart(cartItem);
     }
 
     return (
-        <div className='checkout-item-container'>
-            <div className='image-container'>
+        <CheckoutItemContainer>
+            <ImageContainer>
                 <img src={imageUrl} alt={name} />
-            </div>
+            </ImageContainer>
 
-            <span className='name'>{name}</span>
+            <BaseSpan>{name}</BaseSpan>
 
-            <span className='quantity'>
-                <div onClick={RemoveProductFromCart} className='arrow'>&#10094;</div>
-                <span className='value'>{quantity}</span>
-                <div onClick={AddProductToCart}  className='arrow'>&#10095;</div>
-
-            </span>
-            <span className='price'>{price}</span>
-            <span onClick={DeleteProductFromCart}  className='remove-button'>&#10005;</span>
-        </div>
+            <Quantity>
+                <Arrow onClick={RemoveProductFromCart}>&#10094;</Arrow>
+                <Value>{quantity}</Value>
+                <Arrow onClick={AddProductToCart} >&#10095;</Arrow>
+            </Quantity>
+            
+            <BaseSpan >{price}</BaseSpan>
+            <RemoveButton onClick={DeleteProductFromCart} >&#10005;</RemoveButton>
+        </CheckoutItemContainer>
     )
 }
 
